@@ -12,7 +12,6 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
@@ -23,6 +22,7 @@ class UserManager(BaseUserManager):
             raise ValueError(_('Superuser must have is_superuser=True.'))
 
         return self.create_user(email, password, **extra_fields)
+
 
 class BaseUser(AbstractBaseUser, PermissionsMixin):
     email = models.CharField(unique=True,max_length=50)
@@ -40,7 +40,7 @@ class BaseUser(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return f"{self.email} {self.id}"
 
 class User(BaseUser):
     image = models.ImageField()

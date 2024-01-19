@@ -11,7 +11,7 @@ class RecycledProductSerializer(ModelSerializer):
         model = RecycledProduct
         fields = "__all__"
 
-# class ExchangableProductSerializer(models.Model):
-#     class Meta:
-#         model = ExchangableProduct
-#         fields = "__all__"
+class ExchangableProductSerializer(ModelSerializer):
+    class Meta:
+        model = ExchangableProduct
+        fields = "__all__"

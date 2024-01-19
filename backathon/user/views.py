@@ -4,7 +4,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
-# from user.email import generate_otp,send_otp_email
 from django.contrib.auth.hashers import make_password
 from rest_framework.authtoken.models import Token
 from rest_framework import status
@@ -64,7 +63,6 @@ class UserLogin(APIView):
             )
 class UserView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-   
     def post(self,request):
         try:
             print(request.data)

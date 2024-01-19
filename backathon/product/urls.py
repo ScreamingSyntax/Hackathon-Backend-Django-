@@ -6,5 +6,5 @@ urlpatterns = [
     path('wasteProductsAll/',GetAllWasteProductsView.as_view()),
     path('recycledProducts/',RecycledProductsView.as_view()),
     path('recycledProductsAll/',GetAllRecycledProductsView.as_view()),
-
-]
+    path('exchangableProducts/',ExchangableProductsView.as_view())
+]   

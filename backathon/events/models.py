@@ -9,3 +9,4 @@ class Events(models.Model):
     date = models.DateTimeField(auto_now=True)
     date_of_event = models.DateTimeField()
     user = models.ForeignKey(User,on_delete = models.CASCADE)
+    

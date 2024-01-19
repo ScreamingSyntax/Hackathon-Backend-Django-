@@ -9,7 +9,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from .serializers import *
-
+from user.serializers import *
 
 
 class GetAllWasteProductsView(APIView):
@@ -39,10 +39,15 @@ class WasteProductsView(APIView):
                 })
             try:
                 product = WasteProduct.objects.get(id = param_value)
+                # user = User.objects.get(id = product.user)
+                user_serializer = UserSerializer(product.user) 
                 waste_product_serializer = WasteProductSerializer(product)
                 return Response({
                     "success":1,
-                    "data":waste_product_serializer.data
+                    "data":{
+                       "product": waste_product_serializer.data,
+                       "user": user_serializer.data
+                    }
                 })
             except WasteProduct.DoesNotExist:
                 return Response({
@@ -179,9 +184,46 @@ class ExchangableProductsView(APIView):
                     "success":0,
                     "message":"Please provide product id"
                 })
-            # try:
-            #     product = ExchangableProduct.objects.filter(product=param_value)
-            #     exchangeable_product_serializer = ExchangableProductSerializer(product,many=True)
+            try:
+                product = ExchangableProduct.objects.filter(product=param_value)
+                exchangeable_product_serializer = ExchangableProductSerializer(product,many=True)
+                return Response({
+                    "success":1,
+                    "data":exchangeable_product_serializer.data
+                })
+            except:
+                return Response({
+                    "success":0,
+                    "message":"Something wen't wrong"
+                })  
+    def post(self,request):
+        if request.user.is_authenticated:
+            items = ['product','item','quantity']
+            for item in items:
+                if item not in request.data:
+                    return Response({
+                        "success":0,
+                        "message":f"Please provide {item} field"
+                    })
+                try:
+                    print(request.data)
+                    exchangable_product = ExchangableProductSerializer(data=request.data)
+                    if exchangable_product.is_valid():
+                        exchangable_product.save()
+                        return Response({
+                            "success":1,
+                            "message":"Successfully added"
+                        })
+                    else:
+                        return Response({
+                            "success":0,
+                            "message":exchangable_product.error_messages
+                        })
+                except:
+                    return Response({
+                        "success":0,
+                        "message":"Something wen't wrong"
+                    })
 class RecycledProductsView(APIView):
     authentication_classes = [SessionAuthentication,TokenAuthentication]
     def get(self,request):
