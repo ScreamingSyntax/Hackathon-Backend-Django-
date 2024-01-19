@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-)wb-*&ebnrfb==83*6j-mw^-=t!#si$h2w1kljgh($d#xa@sbw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.254.18','192.168.57.193']
+ALLOWED_HOSTS = ['192.168.254.18','192.168.57.193','*']
 
 
 # Application definition
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'events',
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
+    'chat'
 ]
 
 MIDDLEWARE = [

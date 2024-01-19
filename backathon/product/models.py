@@ -11,6 +11,7 @@ class RecycledProduct(models.Model):
     name = models.CharField(max_length = 20)
     description = models.TextField()
     image = models.ImageField()
+    user = models.ForeignKey(User,on_delete = models.CASCADE,null=True)
 
 class ExchangableProduct(models.Model):
     product = models.ForeignKey(RecycledProduct,on_delete = models.CASCADE)

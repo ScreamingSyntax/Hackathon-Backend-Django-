@@ -8,6 +8,8 @@ from events import urls as event_urls
 from django.conf import settings
 from django.conf.urls.static import static
 from purchase import urls as purchase_urls
+from chat import urls as chat_urls
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/',include(user_urls),        ),
@@ -15,6 +17,8 @@ urlpatterns = [
     path('post/',include(post_urls),),
     path('events/',include(event_urls),),
     path('purchase/',include(purchase_urls),),
+     path('chatbot/',include(chat_urls),        ),
+
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

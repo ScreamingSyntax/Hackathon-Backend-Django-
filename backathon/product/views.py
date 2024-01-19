@@ -163,7 +163,7 @@ class GetAllRecycledProductsView(APIView):
     def get(self,request):
         if request.user.is_authenticated:
             waste_products = RecycledProduct.objects.all()
-            serializer = RecycledProductSerializer(waste_products,many=True)
+            serializer = FetchRecycledProductSerializer(waste_products,many=True)
             return Response({
                 "success":1,
                 "message": serializer.data
@@ -236,7 +236,7 @@ class RecycledProductsView(APIView):
                 })
             try:
                 product = RecycledProduct.objects.get(id = param_value)
-                recycled_product_serializer = WasteProductSerializer(product)
+                recycled_product_serializer = FetchRecycledProductSerializer(product)
                 return Response({
                     "success":1,
                     "data":recycled_product_serializer.data
@@ -262,6 +262,7 @@ class RecycledProductsView(APIView):
                     })
             try:
                 recycled_product_serializer = RecycledProductSerializer(data=request.data)
+                request.data['user'] = request.user.id
                 if recycled_product_serializer.is_valid():
                     recycled_product_serializer.save()
                     return Response({
