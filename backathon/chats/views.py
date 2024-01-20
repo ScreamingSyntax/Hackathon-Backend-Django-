@@ -16,6 +16,7 @@ from user.serializers import *
 class GetParticularChatView(APIView):
     authentication_classes = [SessionAuthentication,TokenAuthentication]
     def get(self,request):
+        print(request.auth)
         if request.user.is_authenticated:
             param_value = request.query_params.get('id', None)
             if param_value == None:
@@ -25,7 +26,7 @@ class GetParticularChatView(APIView):
                 })
             try:
                 user = User.objects.get(id=param_value)
-                chat = NormalChat.objects.filter(reciever=user)
+                chat = NormalChat.objects.filter(  Q(sender=request.user, reciever=user) | Q(sender=user, reciever=request.user))
                 chat_serializer = FetchNormalChatSerializer(chat,many=True)
                 return Response({
                     "success":1,
@@ -47,36 +48,48 @@ class GetParticularChatView(APIView):
 
 class NormalChatView(APIView):
     authentication_classes = [SessionAuthentication,TokenAuthentication]
-    def get(self,request):
+    def get(self, request):
         if request.user.is_authenticated:
             try:
-                chat = NormalChat.objects.filter(Q(sender=request.user) | Q(reciever=request.user))
-                print(chat)
-                chat_serializer = FetchNormalChatSerializer(chat,many=True)
-                return Response({
-                    "success":1,
-                    "data":chat_serializer.data
-                })
-            except Exception as e:
-                print(e) 
+                all_messages = NormalChat.objects.filter(
+                    Q(sender=request.user) | Q(reciever=request.user)
+                ).order_by('message', 'sender_id', 'reciever_id')
+                distinct_messages = []
+                seen_messages = set()
+                for message in all_messages:
+                    message_key = (message.message, message.sender_id, message.reciever_id)
+                    if message_key not in seen_messages:
+                        distinct_messages.append(message)
+                        seen_messages.add(message_key)
+
+                # Serialize the distinct messages
+                chat_serializer = FetchNormalChatSerializer(distinct_messages, many=True)
 
                 return Response({
-                    "success":0,
-                    "message":"Something wen't wrong"
+                    "success": 1,
+                    "data": chat_serializer.data
                 })
+            except Exception as e:
+                print(e)
+                return Response({
+                    "success": 0,
+                    "message": "Something went wrong"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({
-                "success":0,
-                "message":"Please provide token"
-            })
+                "success": 0,
+                "message": "Please provide a valid token"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
     def post(self,request):
         if request.user.is_authenticated:
+            print(request.data)
             fields = ["reciever","message"]
             for field in fields:
                 if field not in request.data:
                     return Response({
                         "success":0,
-                        "mesage":"The field doesn't exist"
+                        "mesage":f"The {field} doesn't exist, Please enter"
                     })
             request.data['sender'] = request.user
             try:

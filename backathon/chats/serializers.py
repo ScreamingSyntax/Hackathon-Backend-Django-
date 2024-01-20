@@ -26,3 +26,4 @@ class FetchNormalChatSerializer(ModelSerializer):
     class Meta:
         model = NormalChat
         fields = "__all__"
+
