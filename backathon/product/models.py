@@ -6,6 +6,8 @@ class WasteProduct(models.Model):
     description = models.TextField()
     image = models.ImageField()
     user = models.ForeignKey(User,on_delete=models.CASCADE)
+    longitude = models.TextField(null=True)
+    latitude = models.TextField(null=True)
 
 class RecycledProduct(models.Model):
     name = models.CharField(max_length = 20)

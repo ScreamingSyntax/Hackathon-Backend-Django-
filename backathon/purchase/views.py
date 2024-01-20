@@ -19,10 +19,14 @@ class ViewWasteClaims(APIView):
             waste_product = WasteProduct.objects.filter(buyer = request.user)
             waste_product_serializer = WastePurchaseSerializer(waste_product,many=True)
             return Response({
-                "success":0,
+                "success":1,
                 "data":waste_product_serializer.data
             })
-
+        else:
+            return Response({
+                "success":0,
+                "message":"Please input token"
+            })
 class WastePurchaseView(APIView):
     authentication_classes = [SessionAuthentication,TokenAuthentication]
     def post(self,request):
