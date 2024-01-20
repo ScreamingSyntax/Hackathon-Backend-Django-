@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'events',
     'rest_framework',
     'rest_framework.authtoken',
-    'chat'
+    'chat',
+    'journals'
 ]
 
 MIDDLEWARE = [

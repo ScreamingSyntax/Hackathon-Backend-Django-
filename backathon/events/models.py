@@ -6,7 +6,6 @@ class Events(models.Model):
     description = models.TextField()
     image = models.ImageField()
     location = models.TextField()
-    date = models.DateTimeField(auto_now=True)
-    date_of_event = models.DateTimeField()
+    date = models.DateField(auto_now=True)
+    date_of_event = models.DateField()
     user = models.ForeignKey(User,on_delete = models.CASCADE)
-    

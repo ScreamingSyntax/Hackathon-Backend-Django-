@@ -82,6 +82,28 @@ class CommentsView(APIView):
                 "success":0,
                 "message":"Please provide token"
             }) 
+
+class GetUserPostView(APIView):
+    authentication_classes=[SessionAuthentication,TokenAuthentication]
+    def get(self,request):
+        if request.user.is_authenticated:
+            try:
+                posts = Post.objects.filter(user = request.user.id)
+                post_serializer = FetchPostSerializer(posts,many=True)
+                return Response({
+                    "success":1,
+                    "data":post_serializer.data
+                })
+            except Post.DoesNotExist:
+                return Response({
+                    "success":0,
+                    "message":"The product doesn't exist"
+                })
+        else: 
+            return Response({
+                "success":0,
+                "message":"Please add token"
+            })
 class PostView(APIView):
     authentication_classes=[SessionAuthentication,TokenAuthentication]
     def get(self,request):
@@ -120,7 +142,7 @@ class PostView(APIView):
             })
     def post(self,request):
         if request.user.is_authenticated:
-            fields = ['content','media','user']
+            fields = ['content','media']
             for field in fields:
                 if field not in request.data:
                     return Response({
@@ -137,6 +159,7 @@ class PostView(APIView):
                         "message":"Successfully Added Post"
                     })
                 else:
+                    print(waste_product_serializer.errors)
                     return Response({
                         "success":0,
                         "message":waste_product_serializer.errors
