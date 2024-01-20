@@ -12,6 +12,14 @@ class RecycledProductSerializer(ModelSerializer):
         fields = "__all__"
 
 
+# class FetchWasteProductSerializer(Mode)
+class FetchWasteProductSerializer(ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = WasteProduct
+        fields = "__all__"
+
+
 class FetchRecycledProductSerializer(ModelSerializer):
     user = UserSerializer()
     class Meta:

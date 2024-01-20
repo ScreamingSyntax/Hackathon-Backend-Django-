@@ -19,6 +19,7 @@ class FetchPostSerializer(ModelSerializer):
 
 class FetchCommentSerializer(ModelSerializer):
     user = UserSerializer()
+    post = PostSerializer()
     class Meta:
         model = Comments
         fields = "__all__"

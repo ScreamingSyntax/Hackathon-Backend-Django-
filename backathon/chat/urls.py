@@ -5,4 +5,5 @@ from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
     path('',    views.ChatView.as_view()),
+    # path('fetch/',views.FetchChat.as_view())
 ]

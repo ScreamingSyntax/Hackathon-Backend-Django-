@@ -10,6 +10,8 @@ from django.conf.urls.static import static
 from purchase import urls as purchase_urls
 from chat import urls as chat_urls
 from journals import urls as journal_urls
+from chats import urls as chats_urls
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/',include(user_urls),        ),
@@ -19,6 +21,8 @@ urlpatterns = [
     path('purchase/',include(purchase_urls),),
     path('chatbot/',include(chat_urls),),
     path('journals/',include(journal_urls),),
+    path('chats/',include(chats_urls),),
+
 
 
 

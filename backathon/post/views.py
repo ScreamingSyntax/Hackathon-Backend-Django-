@@ -30,23 +30,13 @@ class CommentsView(APIView):
                 comment = Comments.objects.filter(post=post)
                 comment_serializer = FetchCommentSerializer(comment,many=True)
                 return Response({
-                       "success":1,
-                       "data":comment_serializer.data
-                   })
+                    "success":1,
+                    "data":comment_serializer.data})
             except Post.DoesNotExist:
                 return Response({
                     "success":0,
                     "message":"The post doesn't exist"
                 })
-            # try:
-            #     post = Post.objects.get(id= str(id))
-            #     comment = Comments.objects.filter(post=post)
-            #     comment_serializer = CommentSerializer(comment,many=True)
-            #     return Response({
-            #         "success":1,
-            #         "data":comment_serializer.data
-            #     })
-
         else:
             return Response({
                 "success":0,
@@ -82,7 +72,41 @@ class CommentsView(APIView):
                 "success":0,
                 "message":"Please provide token"
             }) 
+class GetParticularPostDetails(APIView):
+    authentication_classes=[SessionAuthentication,TokenAuthentication]
+    def get(self,request):
+        if request.user.is_authenticated:
+            try:
+                param_value = request.query_params.get('id', None)
+                print(param_value)
+                if param_value == None:
+                    return Response({
+                        "success":0,
+                        "message":"Please provide product id"
+                    })
+                posts = Post.objects.get(id = param_value)
+                post_serializer = FetchPostSerializer(posts,many=False)
+                comments = Comments.objects.filter(post=posts)
 
+                comment_serializer = FetchCommentSerializer(comments,many=True)
+                return Response({
+                    "success":1,
+                    "data":{
+                        "post":
+                        post_serializer.data,
+                        "comments":comment_serializer.data
+                        }
+                })
+            except Post.DoesNotExist:
+                return Response({
+                    "success":0,
+                    "message":"The product doesn't exist"
+                })
+        else: 
+            return Response({
+                "success":0,
+                "message":"Please add token"
+            })
 class GetUserPostView(APIView):
     authentication_classes=[SessionAuthentication,TokenAuthentication]
     def get(self,request):

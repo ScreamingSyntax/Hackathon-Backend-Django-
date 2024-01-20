@@ -16,6 +16,8 @@ from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication,TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
+from .serializers import *
+from user.models import User
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
@@ -67,6 +69,7 @@ df['lemmatized_text'] = df['patterns'].apply(text_normalization)
 cv = CountVectorizer()
 df_bow = pd.DataFrame(cv.fit_transform(df['lemmatized_text']).toarray(), columns=cv.get_feature_names_out())
 
+
 def index_value_(dataframe_bow, question):
     question_lemma = text_normalization(remove_stopwords(question))
     question_bow = cv.transform([question_lemma]).toarray()
@@ -92,6 +95,20 @@ def remove_stopwords(question):
 stop = stopwords.words('english')
 class ChatView(APIView):
       authentication_classes = [SessionAuthentication,TokenAuthentication]
+      def get(self,request):
+          if request.user.is_authenticated:
+            chat = ChatBot.objects.filter(user = request.user)
+            chat_serializer = ChatSerializer(chat,many=True)
+            return Response({
+                "success":1,
+                "data":chat_serializer.data
+            })
+          else:
+              return Response({
+                  "success":0,
+                  "message":"Please input user id"
+              })
+
       def post(self,request,*args, **kwargs):
             if request.user.is_authenticated:
                 print(request.data)
@@ -112,6 +129,17 @@ class ChatView(APIView):
                 else:
                     responses = df['responses'].loc[index]
                     output = random.choice(responses)
+                    user_obj = User.objects.get(id=request.user.id)
+                    dataf = {}
+                    dataf['user'] = user_obj
+                    dataf['question'] = user_input
+                    dataf['answer'] = output
+                    chat_obj = ChatSerializer(data=dataf)
+                    if (chat_obj.is_valid()):
+                        chat_obj.save()
+                    else:
+                        errors = chat_obj.error_messages
+                        return Response({'success': 0, 'message': errors})
                     return  Response({
                         "success":1,
                         "data":output

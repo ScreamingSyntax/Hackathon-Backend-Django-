@@ -12,10 +12,32 @@ from .serializers import *
 from user.serializers import *
 
 
+class GetAddedProductsView(APIView):
+    authentication_classes = [SessionAuthentication,TokenAuthentication]
+    def get(self,request):
+        if request.user.is_authenticated:
+            recycle_products = RecycledProduct.objects.filter(user = request.user)
+            recycle_products_serializer = FetchRecycledProductSerializer(recycle_products,many=True)
+            waste_products = WasteProduct.objects.filter(user=request.user)
+            waste_products_serializer = FetchWasteProductSerializer(waste_products,many=True)
+            return Response({
+                "success":1,
+                "data":{
+                    "recycle":recycle_products_serializer.data,
+                    "waste":waste_products_serializer.data
+                }
+            })
+        else:
+            return Response({
+                "success":0,
+                "message":"Please provide token"
+            })
+    
 class GetAllWasteProductsView(APIView):
     authentication_classes = [SessionAuthentication,TokenAuthentication]
     def get(self,request):
         if request.user.is_authenticated:
+
             waste_products = WasteProduct.objects.all()
             serializer = WasteProductSerializer(waste_products,many=True)
             return Response({
@@ -23,6 +45,7 @@ class GetAllWasteProductsView(APIView):
                 "message": serializer.data
             })
         else:
+
             return Response({
                 "success":0,
                 "message":"Please provide token"
